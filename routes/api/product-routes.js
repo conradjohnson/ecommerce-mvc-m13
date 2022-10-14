@@ -4,15 +4,43 @@ const { Product, Category, Tag, ProductTag } = require('../../models');
 // The `/api/products` endpoint
 
 // get all products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   // find all products
   // be sure to include its associated Category and Tag data
+  // find all categories
+  // be sure to include its associated Products
+  try {
+    const productData = await Product.findAll({
+      include:[{model:Category}, {model:Tag}],
+    });
+
+    const products = productData.map((prod) => prod.get({ plain: true }));
+    console.log(products);
+   
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+
 });
 
 // get one product
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   // find a single product by its `id`
   // be sure to include its associated Category and Tag data
+  try {
+    const product = await Product.findOne({
+      where:{id: req.params.id},
+      include:[{model:Category}, {model:Tag}],
+    });
+
+    
+    console.log(product);
+   
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
 });
 
 // create new product
@@ -89,8 +117,42 @@ router.put('/:id', (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async (req, res) => {
   // delete one product by its `id` value
+  // delete product
+  console.log('gonna del a product.');
+  try {
+    const prodData = await Product.destroy({
+      where: {
+        id: req.params.id
+      },
+    });
+
+    if (!prodData) {
+      res.status(404).json({ message: 'No product found with this id.' });
+      return;
+    }
+
+    // delete product tags with same product id.
+    try{
+      const prodTagData = await ProductTag.destroy({
+        where: {
+          product_id: req.params.id
+        },
+      });
+      // products may not have tags, so if nothing deleted, no worries, move on.
+      //if both successful, send response
+      res.status(200).json(prodData);
+    }
+    catch (err){
+      res.status(500).json(err.message)
+    }
+    
+  } catch (err) {
+    res.status(500).json(err.message);
+  }
+
+  
 });
 
 module.exports = router;
