@@ -80,18 +80,36 @@ router.delete('/:id', async (req, res) => {
   // delete a category by its `id` value
   console.log('gonna del a cat.');
   try {
-    const catData = await Category.destroy({
-      where: {
-        id: req.params.id
-      },
-    });
+    // update product table to signal needing category. set to Unassigned code 1
+    const updateProducts = await Product.update(
+      {category_id:1 },
+      {where:{category_id:req.params.id}}
+    );
 
-    if (!catData) {
-      res.status(404).json({ message: 'No category found with this id!' });
-      return;
-    }
+    try{
+        if (req.params.id != 1){      
+          res.status(404).json({ message: "Can't delete 1 - Reserved for Unassigned" });
+        } 
+        const catData = await Category.destroy({
+          where: {
+            id: req.params.id
+          },
+        });
+    
+        if (!catData) {
+          res.status(404).json({ message: 'No category found with this id!' });
+          return;
+        }
 
-    res.status(200).json(catData);
+        //finally send our response.
+        res.status(200).json(catData);
+      }
+      catch(err){
+        res.status(500).json(err);
+      }
+
+    
+
   } catch (err) {
     res.status(500).json(err);
   }
