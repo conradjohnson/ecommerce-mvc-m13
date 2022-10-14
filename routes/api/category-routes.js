@@ -87,8 +87,9 @@ router.delete('/:id', async (req, res) => {
     );
 
     try{
-        if (req.params.id != 1){      
+        if (req.params.id == 1){      
           res.status(404).json({ message: "Can't delete 1 - Reserved for Unassigned" });
+          return;
         } 
         const catData = await Category.destroy({
           where: {

@@ -24,8 +24,9 @@ ExpressJS Routing API interface to mysql via sequelize.  Allows a front end to i
 ***
 
 Demo:
+[Demo Video Link](https://drive.google.com/file/d/1EsbJ8P3dso3t5wmnEEoTBxaoCmiFO8yj/view)
 
-[![Demo Video Link](img/DemoVid.gif)](https://need-link)
+[![Demo Video Link](img/DemoVid.gif)](https://drive.google.com/file/d/1EsbJ8P3dso3t5wmnEEoTBxaoCmiFO8yj/view)
 
 
 Screen Shot:
